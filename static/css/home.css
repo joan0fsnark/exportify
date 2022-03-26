@@ -1,0 +1,124 @@
+/* header */
+html, body {
+	margin: 0px;
+	padding: 0px;
+	height: 100%;
+	width: 100%;
+	background: white;
+	font-family: 'arial';
+}
+
+#container {
+	min-height: 100%;
+	position: relative;
+}
+
+#header {
+	padding: 25px;
+}
+
+h1 {
+	color: black;
+	text-align: center;
+	font-size: 25px;
+}
+
+/* connect */
+#buttons {
+	text-align: center;
+}
+
+/* form  */
+form {
+	text-align: center;
+}
+
+label {
+	font-size: 16px;
+	color: black;
+	font-weight: bold;
+	margin-right: 5px;
+}
+
+#form input {
+	display: inline-block;
+	margin: auto;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	height: 30px;
+	padding: 0px 10px 0px 10px;
+	font-size: 15px;
+}
+
+input[type=text] {
+	width: 30%;
+	box-sizing: border-box;
+	border-radius: 4px;
+	font-size: 15px;
+}
+
+
+input[type=submit] {
+	height: 30px;
+	background-color: #a4d4ae;
+	border: 2px solid #a4d4ae;
+	border-radius: 50px;
+}
+
+input[type=submit]:hover {
+	background-color: #4caf60;
+	color: white;
+}
+
+
+
+/* connect */
+#buttons {
+	text-align: center;
+}
+
+button {
+	margin: 20px 0 20px 10px;
+	text-align: center;
+	height: 30px;
+	background-color: #a4d4ae;
+	border: 2px solid #a4d4ae;
+	border-radius: 50px;
+	padding: 0px 10px 0px 10px;
+	font-size: 15px;
+}
+
+#connected {
+	background-color: #dadada;
+	border: none;
+	color: black;
+}
+
+#refresh {
+	background-color: #a4d4ae;
+	color: black;
+}
+
+#refresh:hover {
+	background-color: #4caf60;
+	color: white;
+}
+
+#error {
+	color: red;
+	font-size: 14px;
+}
+
+
+/* footer */
+h3 {
+	color: black;
+	margin: 1% 0 0 2%;
+	font-size: 16px;
+}
+
+#instructions {
+	margin: 1% 0 1% 1%;
+	font-size: 15px;
+	padding: 0 0 20px 20px;
+}

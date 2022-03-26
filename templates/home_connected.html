@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Export Spotify Playlists</title>
+		<link rel='stylesheet' href="{{ url_for('static', filename='css/home.css') }}"> 
+		<!-- {{ url_for('static', filename='css/home_connected.css') }} -->
+	</head>
+	
+	<body>
+		<div id="container">
+			<div id="header">
+				<h1>Export Spotify Playlists</h1>
+			</div>
+			<div id="body">
+				<div id="form">
+					<form method="POST" action="/export">
+						<div>
+							<label for="username">Spotify Username:</label>
+							<input type="text" name="name" id="username" placeholder="Enter username">
+						</div>
+
+						<div>
+							<label for="playurl">Playlist URL:</label>
+							<input type="text" name="url" id="playurl" placeholder="Enter playlist url">
+						</div>
+
+						<div>
+							<input type="submit" name="tsv" value="Export as TSV" download/>
+						</div>
+					</form>
+				</div>
+				<div id="buttons">
+					<button id="connected" pointer-events="none">Connected</button>
+					<button id="refresh" onClick="window.location.href='http://localhost:5000/refresh';">Refresh Token</button>
+				</div>
+			</div>
+			<div id="footer">
+				<h3>Instructions</h3>
+				<ul id="instructions">
+					<li>Login to your Spotify account.
+					<li>Enter the playlist owner's username and the playlist link 
+						into the form. 
+					<li>Select TSV to export the data to .tsv format. 
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>
