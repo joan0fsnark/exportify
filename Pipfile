@@ -8,6 +8,7 @@ flask = "*"
 gunicorn = "*"
 pandas = "*"
 python-dotenv = "*"
+spotipy = "*"
 
 [dev-packages]
 

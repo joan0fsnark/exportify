@@ -1,6 +1,5 @@
 '''
 Spotify playlist exporter. 
-
 CONTROL FLOW:
 / > /login > /callback > /connected
 '''

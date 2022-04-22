@@ -9,10 +9,12 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
 import pandas as pd
+from dotenv import load_dotenv   #for python-dotenv method
+load_dotenv()                    #for python-dotenv method
 
 
-CLI_ID 	= os.environ.get('CLI_ID') # CLIENT ID 
-CLI_KEY = os.environ.get('CLI_KEY') # CLIENT SECRET 
+CLI_ID 	= os.getenv('CLI_ID') # CLIENT ID 
+CLI_KEY = os.getenv('CLI_KEY') # CLIENT SECRET  
 
 # header row for tsv file 
 tsv_headers = ["Name","Artist","Album","Label"]
