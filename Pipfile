@@ -9,6 +9,7 @@ gunicorn = "*"
 pandas = "*"
 python-dotenv = "*"
 spotipy = "*"
+numpy = "*"
 
 [dev-packages]
 
