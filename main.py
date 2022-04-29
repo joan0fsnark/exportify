@@ -88,6 +88,8 @@ def login():
 
 @app.route("/callback")
 def callback():
+	error = request.args.get('error')
+	stored_state = request.cookies.get('spotify_auth_state')
 	code = request.args.get('code')
 	state = request.args.get('state') or None
 
