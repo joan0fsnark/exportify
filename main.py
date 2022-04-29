@@ -22,8 +22,8 @@ import secrets
 import requests
 from urllib.parse import urlencode
 from dotenv import load_dotenv   #for python-dotenv method
-load_dotenv()                    #for python-dotenv method
-import os 						 #imports .env secrets
+load_dotenv()                    #imports .env secrets
+import os 						 
 
 CLI_ID 	= os.getenv('CLI_ID') # CLIENT ID 
 CLI_KEY = os.getenv('CLI_KEY') # CLIENT SECRET 
