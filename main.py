@@ -23,7 +23,7 @@ import requests
 from urllib.parse import urlencode
 from dotenv import load_dotenv   #for python-dotenv method
 load_dotenv()                    #for python-dotenv method
-import os 
+import os 						 #imports .env secrets
 
 CLI_ID 	= os.getenv('CLI_ID') # CLIENT ID 
 CLI_KEY = os.getenv('CLI_KEY') # CLIENT SECRET 
