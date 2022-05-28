@@ -9,8 +9,6 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
 import pandas as pd
-from dotenv import load_dotenv   #for python-dotenv method
-load_dotenv()                    #for python-dotenv method
 
 
 CLI_ID 	= os.getenv('CLI_ID') # CLIENT ID 

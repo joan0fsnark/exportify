@@ -21,13 +21,11 @@ import string
 import secrets
 import requests
 from urllib.parse import urlencode
-from dotenv import load_dotenv   #for python-dotenv method
-load_dotenv()                    #imports .env secrets
 import os 						 
 
 CLI_ID 	= os.getenv('CLI_ID') # CLIENT ID 
 CLI_KEY = os.getenv('CLI_KEY') # CLIENT SECRET 
-REDIRECT_URI = "http://localhost:8888/callback"
+REDIRECT_URI = "http://localhost:8888/callback/"
 AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 
@@ -88,8 +86,8 @@ def login():
 
 @app.route("/callback")
 def callback():
-	error = request.args.get('error')
-	stored_state = request.cookies.get('spotify_auth_state')
+	error = request.args.get('error') # Test (it's in orig code)
+	stored_state = request.cookies.get('spotify_auth_state') # Test
 	code = request.args.get('code')
 	state = request.args.get('state') or None
 
