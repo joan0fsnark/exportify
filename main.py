@@ -67,6 +67,7 @@ def export():
 
 @app.route("/login")
 def login():
+	print("/login")
 	state = ''.join(
 		secrets.choice(string.ascii_uppercase + string.digits) for _ in range(16)
 	)
