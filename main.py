@@ -65,7 +65,6 @@ def export():
 	return file_export
 
 
-
 @app.route("/login")
 def login():
 	state = ''.join(
@@ -142,7 +141,7 @@ def refresh():
 	res_data = res.json()
 	# load new tokens into session
 	session['tokens']['access_token'] = res_data.get('access_token')
-
+	print("connected, redirecting..")
 	return redirect(url_for('connected'))
 
 
