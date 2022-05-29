@@ -103,6 +103,7 @@ def export(playlist_uri):
 
 @app.route("/login")
 def login():
+	print("login")
 	state = ''.join(
 		secrets.choice(string.ascii_uppercase + string.digits) for _ in range(16)
 	)
@@ -157,6 +158,34 @@ def callback():
 def show_playlists():
 	token = session.get('tokens')
 
+@app.route('/refresh')
+def refresh():
+	tokens = session.get('tokens') or None
+	print("refresh")
+	if tokens is None:
+		return render_template("home.html", value="reauthorize")
+
+	payload = {
+		'grant_type': 'refresh_token',
+		'refresh_token': tokens.get('refresh_token'),
+	}
+	headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+	res = requests.post(
+		TOKEN_URL, auth=(CLI_ID, CLI_KEY), data=payload, headers=headers
+	)
+	res_data = res.json()
+	# load new tokens into session
+	session['tokens']['access_token'] = res_data.get('access_token')
+	print("connected, redirecting..")
+	return redirect(url_for('connected'))
+
+
+@app.route('/connected')
+def connected():
+	print("connected")
+	token = session.get('tokens').get('access_token')
+	print(token)
 	if token:
 		expires_at = session.get('tokens').get('expires_at')
 		current_time = int( time.time() )
