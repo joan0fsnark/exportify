@@ -86,6 +86,7 @@ def login():
 
 @app.route("/callback")
 def callback():
+	print("Callback")
 	error = request.args.get('error') # Test (it's in orig code)
 	stored_state = request.cookies.get('spotify_auth_state') # Test
 	code = request.args.get('code')
@@ -104,6 +105,7 @@ def callback():
 	}
 	res = requests.post(TOKEN_URL, auth=(CLI_ID, CLI_KEY), data=payload)
 	res_data = res.json()
+	print(res_data)
 
 	if res_data.get('error') or res.status_code != 200:
 		app.logger.error(
