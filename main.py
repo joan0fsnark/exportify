@@ -67,7 +67,7 @@ def export():
 
 @app.route("/login")
 def login():
-	print("/login")
+	print("login")
 	state = ''.join(
 		secrets.choice(string.ascii_uppercase + string.digits) for _ in range(16)
 	)
@@ -152,6 +152,7 @@ def refresh():
 def connected():
 	print("connected")
 	token = session.get('tokens').get('access_token')
+	print(token)
 	if token:
 		return render_template("home_connected.html") 
 	else:
