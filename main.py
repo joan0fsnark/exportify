@@ -93,6 +93,7 @@ def callback():
 
 	# check state 
 	if state is None:
+		print("State is None, attempting to render_template home.html...")
 		return render_template("home.html", value="error")
 	
 	# request token's payload 
@@ -124,7 +125,7 @@ def callback():
 @app.route('/refresh')
 def refresh():
 	tokens = session.get('tokens') or None
-
+	print("refresh")
 	if tokens is None:
 		return render_template("home.html", value="reauthorize")
 
