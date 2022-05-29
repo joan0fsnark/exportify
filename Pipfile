@@ -5,13 +5,12 @@ name = "pypi"
 
 [packages]
 flask = "*"
-gunicorn = "*"
-pandas = "*"
-python-dotenv = "*"
 spotipy = "*"
-numpy = "*"
+pandas = "*"
+python-decouple = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "*"

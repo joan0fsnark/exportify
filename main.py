@@ -1,7 +1,8 @@
 '''
 Spotify playlist exporter. 
+
 CONTROL FLOW:
-/ > /login > /callback > /connected
+/ > /login > /callback > /playlists
 '''
 
 from flask import (
@@ -16,43 +17,78 @@ from flask import (
 	abort, 
 	send_file, 
 )
-from spotify_exporter import build_playlist
+from flask_restful import Api, Resource, reqparse
+import time
+
+app = Flask(__name__, static_url_path='', static_folder='frontend/spotify')
+app.secret_key = 'spotify'
+
+from spotify_exporter import build_playlist, get_user_playlists
 import string 
 import secrets
 import requests
 from urllib.parse import urlencode
-import os 						 
+from dotenv import load_dotenv   #for python-dotenv method
+load_dotenv()                    #for python-dotenv method
+import os
 
-CLI_ID 	= os.getenv('CLI_ID') # CLIENT ID 
-CLI_KEY = os.getenv('CLI_KEY') # CLIENT SECRET 
-REDIRECT_URI = 'http://127.0.0.1:5000/callback'
+
+CLI_ID 	= os.environ.get('CLI_ID') # CLIENT ID 
+CLI_KEY = os.environ.get('CLI_KEY') # CLIENT SECRET 
+REDIRECT_URI = "http://127.0.0.1:5000/callback"
 AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 
 app = Flask(__name__)
 app.secret_key = 'selectARandomsecret_Key-forTheAPP'
 
+def get_access_token():
+	tokens = session.get('tokens') or None
+
+	if tokens is None:
+		return render_template("home.html")
+
+	payload = {
+		'grant_type': 'refresh_token',
+		'refresh_token': tokens.get('refresh_token'),
+	}
+	headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+	res = requests.post(
+		TOKEN_URL, auth=(CLI_ID, CLI_KEY), data=payload, headers=headers
+	)
+	res_data = res.json()
+
+	# load new tokens into session
+	session['tokens']['access_token'] = res_data.get('access_token')
+	session['tokens']['expires_at'] = int( time.time() ) + 3540 # access_token expires in 59 minutes
+	session.modified = True
+	return
+
+@app.after_request
+def after_request(response):
+  response.headers.add('Access-Control-Allow-Origin', '*')
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+  return response
 
 @app.route("/")
 def home():
 	return render_template("home.html") 
 
 
-@app.route("/export", methods={"POST"})
-def export():
-	# get form inputs
-	form_data = request.form.to_dict(flat=False)
-	user = form_data['name'][0]
-	playlist_url = form_data['url'][0]
-	# get playlist data 
-	uri_len = 22
-	start = playlist_url.find("playlist")
-	mid = len("playlist/")
-	end = start + mid
-	playlist_uri = playlist_url[end:end+uri_len] 
+@app.route("/export/<playlist_uri>", methods=["GET", "POST"])
+def export(playlist_uri):
+
+	token = session.get('tokens')
+	current_time = int( time.time() )
+	if (token and current_time > token.get('expires_at')):
+		get_access_token()
+
+	uri = playlist_uri
 
 	# create tsv file
-	filename = build_playlist(user, playlist_uri, token=session.get('tokens').get('access_token'))
+	filename = build_playlist(uri, token=session.get('tokens').get('access_token'))
 
 	if filename == "error":
 		return render_template("home.html", value="reauthorize")
@@ -67,35 +103,28 @@ def export():
 
 @app.route("/login")
 def login():
-	print("login")
 	state = ''.join(
 		secrets.choice(string.ascii_uppercase + string.digits) for _ in range(16)
 	)
-	scope = "playlist-read-private"
+	# scope = "playlist-read-private"
 	payload = {
 		'client_id': CLI_ID,
 		'response_type': 'code',
 		'redirect_uri': REDIRECT_URI,
-		'state': state,
-		'scope': scope
+		'state': state
 	}
 	res = make_response(redirect(f'{AUTH_URL}/?{urlencode(payload)}'))
 	res.set_cookie('spotify_auth_state', state, samesite="Strict")
-	print("cookie set")
 	return res
 
 
 @app.route("/callback")
 def callback():
-	print("Callback")
-	# error = request.args.get('error') # Test (it's in orig code)
-	# stored_state = request.cookies.get('spotify_auth_state') # Test
 	code = request.args.get('code')
 	state = request.args.get('state') or None
 
 	# check state 
 	if state is None:
-		print("State is None, attempting to render_template home.html...")
 		return render_template("home.html", value="error")
 	
 	# request token's payload 
@@ -106,7 +135,6 @@ def callback():
 	}
 	res = requests.post(TOKEN_URL, auth=(CLI_ID, CLI_KEY), data=payload)
 	res_data = res.json()
-	print(res_data)
 
 	if res_data.get('error') or res.status_code != 200:
 		app.logger.error(
@@ -115,48 +143,30 @@ def callback():
 			)
 		)
 		abort(res.status_code)
-	
+
 	session['tokens'] = {
 		'access_token': res_data.get('access_token'),
 		'refresh_token': res_data.get('refresh_token'),
+		'expires_at': int( time.time() ) + 3540 # access_token expires in 59 minutes
 	}
 	session.modified = True 
 
-	return redirect(url_for('connected'))
+	return redirect(url_for('show_playlists'))
 
+@app.route('/playlists', methods = ['GET'])
+def show_playlists():
+	token = session.get('tokens')
 
-@app.route('/refresh')
-def refresh():
-	tokens = session.get('tokens') or None
-	print("refresh")
-	if tokens is None:
-		return render_template("home.html", value="reauthorize")
-
-	payload = {
-		'grant_type': 'refresh_token',
-		'refresh_token': tokens.get('refresh_token'),
-	}
-	headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-
-	res = requests.post(
-		TOKEN_URL, auth=(CLI_ID, CLI_KEY), data=payload, headers=headers
-	)
-	res_data = res.json()
-	# load new tokens into session
-	session['tokens']['access_token'] = res_data.get('access_token')
-	print("connected, redirecting..")
-	return redirect(url_for('connected'))
-
-
-@app.route('/connected')
-def connected():
-	print("connected")
-	token = session.get('tokens').get('access_token')
-	print(token)
 	if token:
-		return render_template("home_connected.html") 
+		expires_at = session.get('tokens').get('expires_at')
+		current_time = int( time.time() )
+		if (current_time > expires_at):
+			get_access_token();
+		data = get_user_playlists(token=session.get('tokens').get('access_token'))
+		# return data
+		return render_template("home_connected.html", user=data['user'], playlists=data['playlists'], token=token)
 	else:
-		return render_template("home.html")
+		return redirect(url_for('home'))
 
 
 if __name__ == "__main__":
