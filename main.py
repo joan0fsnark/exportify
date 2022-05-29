@@ -81,6 +81,7 @@ def login():
 	}
 	res = make_response(redirect(f'{AUTH_URL}/?{urlencode(payload)}'))
 	res.set_cookie('spotify_auth_state', state, samesite="Strict")
+	print("cookie set")
 	return res
 
 
